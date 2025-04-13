@@ -1,0 +1,93 @@
+﻿<Window x:Class="MemoryGame.Views.GameOptionsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        Title="Game Options" Height="320" Width="300" 
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize" ShowInTaskbar="False">
+
+    <Window.Resources>
+        <x:Array x:Key="RowsAndColumnsValues" Type="sys:Int32">
+            <sys:Int32>2</sys:Int32>
+            <sys:Int32>3</sys:Int32>
+            <sys:Int32>4</sys:Int32>
+            <sys:Int32>5</sys:Int32>
+            <sys:Int32>6</sys:Int32>
+        </x:Array>
+
+        <x:Array x:Key="TimeValues" Type="sys:Int32">
+            <sys:Int32>30</sys:Int32>
+            <sys:Int32>60</sys:Int32>
+            <sys:Int32>120</sys:Int32>
+            <sys:Int32>180</sys:Int32>
+            <sys:Int32>300</sys:Int32>
+        </x:Array>
+    </Window.Resources>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Game Options Title -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+                   Text="Game Options" FontSize="16" FontWeight="Bold" Margin="0,0,0,15"/>
+
+        <!-- Size Options Section -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" 
+                  Text="Board Size:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+
+        <RadioButton Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" 
+                    Name="StandardRadio" Content="Standard (4x4)" 
+                    IsChecked="{Binding IsStandard}" Margin="10,0,0,10" 
+                    Checked="StandardRadio_Checked"/>
+
+        <RadioButton Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                    Name="CustomRadio" Content="Custom Size" 
+                    IsChecked="{Binding IsCustom}" Margin="10,0,0,10"
+                    Checked="CustomRadio_Checked"/>
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Rows:" Margin="30,0,10,10"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" Name="RowsComboBox"
+                 ItemsSource="{StaticResource RowsAndColumnsValues}" 
+                 SelectedItem="{Binding Rows, Mode=TwoWay}" 
+                 IsEnabled="{Binding IsCustom}" Margin="0,0,0,10"/>
+
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="Columns:" Margin="30,0,10,10"/>
+        <ComboBox Grid.Row="5" Grid.Column="1" Name="ColumnsComboBox"
+                 ItemsSource="{StaticResource RowsAndColumnsValues}" 
+                 SelectedItem="{Binding Columns, Mode=TwoWay}" 
+                 IsEnabled="{Binding IsCustom}" Margin="0,0,0,10"/>
+
+        <!-- Separator between sections -->
+        <Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,5,0,10"/>
+
+        <!-- Time Setting Section (always available) -->
+        <TextBlock Grid.Row="7" Grid.Column="0" Text="Time Limit (seconds):" Margin="0,0,10,10" 
+                  VerticalAlignment="Center"/>
+        <ComboBox Grid.Row="7" Grid.Column="1" Name="TimeComboBox"
+                 ItemsSource="{StaticResource TimeValues}" 
+                 SelectedItem="{Binding TimeInSeconds, Mode=TwoWay}" 
+                 Margin="0,0,0,10" VerticalAlignment="Center"/>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" 
+                   Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+            <Button Content="OK" Width="80" Click="OkButton_Click" Margin="0,0,10,0"/>
+            <Button Content="Cancel" Width="80" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,0 +1,136 @@
+﻿<Window x:Class="MemoryGame.Views.GameView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MemoryGame.Views"
+        xmlns:converters="clr-namespace:MemoryGame.Converters"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        mc:Ignorable="d"
+        Title="Memory Game" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen">
+
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+
+        <!-- Converter pentru a inversa un boolean -->
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+
+        <!-- Converter pentru a verifica egalitatea -->
+        <converters:EqualityConverter x:Key="EqualityConverter"/>
+        <converters:FileImageConverter x:Key="FileImageConverter"/>
+        <!-- Valori pentru dropdown-uri -->
+        <x:Array x:Key="RowsAndColumnsValues" Type="sys:Int32">
+            <sys:Int32>2</sys:Int32>
+            <sys:Int32>3</sys:Int32>
+            <sys:Int32>4</sys:Int32>
+            <sys:Int32>5</sys:Int32>
+            <sys:Int32>6</sys:Int32>
+        </x:Array>
+
+        <x:Array x:Key="TimeValues" Type="sys:Int32">
+            <sys:Int32>30</sys:Int32>
+            <sys:Int32>60</sys:Int32>
+            <sys:Int32>120</sys:Int32>
+            <sys:Int32>180</sys:Int32>
+            <sys:Int32>300</sys:Int32>
+        </x:Array>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Menu -->
+        <Menu Grid.Row="0">
+            <MenuItem Header="File">
+                <MenuItem Header="Category">
+                    <MenuItem Header="Select Category">
+                        <MenuItem.ItemsSource>
+                            <Binding Path="Categories"/>
+                        </MenuItem.ItemsSource>
+                        <MenuItem.ItemContainerStyle>
+                            <Style TargetType="MenuItem">
+                                <Setter Property="Header" Value="{Binding}"/>
+                                <Setter Property="IsCheckable" Value="True"/>
+                                <Setter Property="StaysOpenOnClick" Value="True"/>
+                                <EventSetter Event="Click" Handler="CategoryMenuItem_Click"/>
+                            </Style>
+                        </MenuItem.ItemContainerStyle>
+                    </MenuItem>
+                </MenuItem>
+                <MenuItem Header="New Game" Command="{Binding NewGameCommand}"/>
+                <MenuItem Header="Open Game" Command="{Binding OpenGameCommand}"/>
+                <MenuItem Header="Save Game" Command="{Binding SaveGameCommand}"/>
+                <MenuItem Header="Statistics" Command="{Binding ShowStatisticsCommand}"/>
+                <Separator/>
+                <MenuItem Header="Exit" Command="{Binding ExitCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Options">
+                <MenuItem Header="Standard (4x4)" IsCheckable="True" IsChecked="{Binding IsCustomSize, Converter={StaticResource InverseBooleanConverter}}" Click="StandardSize_Click"/>
+                <MenuItem Header="Options">
+                    <MenuItem Header="Standard (4x4)" IsCheckable="True" IsChecked="{Binding IsCustomSize, Converter={StaticResource InverseBooleanConverter}}" Click="StandardSize_Click"/>
+                    <MenuItem Header="Custom Game Settings..." Click="CustomSize_Click"/>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="About" Click="About_Click"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Game Info -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="10,5">
+            <TextBlock Text="Time remaining: " FontWeight="Bold"/>
+            <TextBlock Text="{Binding RemainingTime, StringFormat=mm\\:ss}"/>
+        </StackPanel>
+
+        <!-- Game Board -->
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding Cards}" Margin="10">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <UniformGrid Rows="{Binding Rows}" Columns="{Binding Columns}"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Button Margin="5" Command="{Binding DataContext.CardClickCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}" 
+        CommandParameter="{Binding}" IsEnabled="{Binding DataContext.IsGameOver, RelativeSource={RelativeSource AncestorType=ItemsControl}, Converter={StaticResource InverseBooleanConverter}}">
+                        <Grid Width="100" Height="100">
+                            <!-- Card Back (Blue Rectangle) -->
+                            <Rectangle Fill="DarkBlue" Stroke="Black" StrokeThickness="1" Visibility="{Binding IsRevealed, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Inverse}"/>
+
+                            <!-- Card Front (Image) -->
+                            <Image Source="{Binding ImagePath, Converter={StaticResource FileImageConverter}}" Stretch="Uniform" 
+                       Visibility="{Binding IsRevealed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                            <!-- Remove this TextBlock entirely to get rid of the icon -->
+                            <!-- OR only show it if the image fails to load -->
+                        </Grid>
+                    </Button>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Status Bar -->
+        <StatusBar Grid.Row="3">
+            <StatusBarItem>
+                <TextBlock Text="{Binding CurrentUsername, StringFormat=Player: {0}}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding SelectedCategory, StringFormat=Category: {0}}"/>
+            </StatusBarItem>
+            <Separator/>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Rows, StringFormat={}Rows: {0}}"/>
+            </StatusBarItem>
+            <StatusBarItem>
+                <TextBlock Text="{Binding Columns, StringFormat={}Columns: {0}}"/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>
